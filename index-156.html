@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Livro-Razão · Finanças Pessoais</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ===================== ECRÃ DE BLOQUEIO ===================== -->
+<div id="lock-screen" class="lock-screen">
+  <div class="lock-card">
+    <div class="ledger-mark">§</div>
+    <h1 class="lock-title">Livro-Razão</h1>
+    <p class="lock-sub">Introduz a palavra-passe para abrir o teu livro de contas.</p>
+    <div id="lock-setup" class="hidden">
+      <p class="lock-note">Primeira utilização — define uma palavra-passe.</p>
+      <input type="password" id="setup-pass" placeholder="Nova palavra-passe" autocomplete="new-password">
+      <input type="password" id="setup-pass-confirm" placeholder="Confirmar palavra-passe" autocomplete="new-password">
+      <button id="setup-submit" class="btn-primary">Criar e entrar</button>
+    </div>
+    <div id="lock-enter" class="hidden">
+      <input type="password" id="enter-pass" placeholder="Palavra-passe" autocomplete="current-password">
+      <button id="enter-submit" class="btn-primary">Entrar</button>
+    </div>
+    <p id="lock-error" class="lock-error hidden">Palavra-passe incorreta.</p>
+    <p id="lock-status" class="lock-status">A ligar ao livro…</p>
+  </div>
+</div>
+
+<!-- ===================== APLICAÇÃO ===================== -->
+<div id="app" class="app hidden">
+
+  <header class="app-header">
+    <div class="header-left">
+      <span class="ledger-mark small">§</span>
+      <div>
+        <h1>Livro-Razão</h1>
+        <p class="header-sub">Contas de <span id="month-label">—</span></p>
+      </div>
+    </div>
+    <div class="header-right">
+      <select id="month-picker" class="month-picker"></select>
+      <button id="lock-btn" class="icon-btn" title="Bloquear">🔒</button>
+    </div>
+  </header>
+
+  <nav class="tabs" id="tabs">
+    <button class="tab active" data-tab="dashboard">Dashboard</button>
+    <button class="tab" data-tab="gastos">Gastos</button>
+    <button class="tab" data-tab="poupancas">Poupanças</button>
+    <button class="tab" data-tab="config">Configurações</button>
+  </nav>
+
+  <main class="app-main">
+
+    <!-- ---------- DASHBOARD ---------- -->
+    <section id="tab-dashboard" class="tab-panel active">
+      <div class="stamp-row" id="stamp-row"></div>
+
+      <div class="panel-grid">
+        <div class="card">
+          <h2>Gastos por categoria — <span id="dash-month-name">este mês</span></h2>
+          <canvas id="chart-categories" height="220"></canvas>
+        </div>
+        <div class="card">
+          <h2>Evolução mensal</h2>
+          <canvas id="chart-trend" height="220"></canvas>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Comparação com meses anteriores</h2>
+        <div class="table-wrap">
+          <table class="ledger-table" id="compare-table">
+            <thead><tr><th>Categoria</th><th>Este mês</th><th>Mês anterior</th><th>Variação</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------- GASTOS ---------- -->
+    <section id="tab-gastos" class="tab-panel">
+      <div class="card form-card">
+        <h2>Adicionar gasto</h2>
+        <form id="expense-form" class="inline-form">
+          <input type="date" id="expense-date" required>
+          <select id="expense-category" required></select>
+          <input type="number" id="expense-amount" placeholder="Valor (€)" step="0.01" min="0" required>
+          <input type="text" id="expense-note" placeholder="Nota (opcional)">
+          <button type="submit" class="btn-primary">Adicionar</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <div class="card-header-row">
+          <h2>Gastos de <span id="gastos-month-name">—</span></h2>
+          <span class="total-pill">Total: <span id="gastos-total">0,00 €</span></span>
+        </div>
+        <div class="table-wrap">
+          <table class="ledger-table" id="expenses-table">
+            <thead><tr><th>Data</th><th>Categoria</th><th>Nota</th><th class="num">Valor</th><th></th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------- POUPANÇAS ---------- -->
+    <section id="tab-poupancas" class="tab-panel">
+      <div class="card form-card">
+        <h2>Registar poupança</h2>
+        <form id="saving-form" class="inline-form">
+          <input type="date" id="saving-date" required>
+          <select id="saving-category" required></select>
+          <input type="number" id="saving-amount" placeholder="Valor (€)" step="0.01" min="0" required>
+          <button type="submit" class="btn-primary">Guardar</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <div class="card-header-row">
+          <h2>Poupanças de <span id="poupancas-month-name">—</span></h2>
+          <span class="total-pill savings">Total: <span id="poupancas-total">0,00 €</span></span>
+        </div>
+        <div class="table-wrap">
+          <table class="ledger-table" id="savings-table">
+            <thead><tr><th>Data</th><th>Categoria</th><th class="num">Valor</th><th></th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------- CONFIGURAÇÕES ---------- -->
+    <section id="tab-config" class="tab-panel">
+      <div class="panel-grid">
+        <div class="card">
+          <h2>Categorias de gastos</h2>
+          <form id="cat-expense-form" class="inline-form small">
+            <input type="text" id="cat-expense-name" placeholder="Nome da categoria" required>
+            <input type="number" id="cat-expense-goal" placeholder="Objetivo mensal (€)" step="0.01" min="0">
+            <button type="submit" class="btn-secondary">Adicionar</button>
+          </form>
+          <ul class="cat-list" id="cat-expense-list"></ul>
+        </div>
+
+        <div class="card">
+          <h2>Categorias de poupança</h2>
+          <form id="cat-saving-form" class="inline-form small">
+            <input type="text" id="cat-saving-name" placeholder="Nome da categoria" required>
+            <input type="number" id="cat-saving-goal" placeholder="Objetivo mensal (€)" step="0.01" min="0">
+            <button type="submit" class="btn-secondary">Adicionar</button>
+          </form>
+          <ul class="cat-list" id="cat-saving-list"></ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Exportar</h2>
+        <p class="muted">Exporta os dados do mês selecionado.</p>
+        <div class="export-row">
+          <button id="export-pdf" class="btn-secondary">Exportar PDF</button>
+          <button id="export-excel" class="btn-secondary">Exportar Excel</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Segurança</h2>
+        <form id="change-pass-form" class="inline-form small">
+          <input type="password" id="new-pass" placeholder="Nova palavra-passe" required>
+          <button type="submit" class="btn-secondary">Alterar palavra-passe</button>
+        </form>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div id="toast" class="toast hidden"></div>
+
+<!-- Firebase (compat build, no bundler needed) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<!-- Gráficos e exportação -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.3/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+<script src="firebase-config.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
